@@ -62,7 +62,7 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
         <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
         <div id="mySidenav" class="sidenav">
             <span class="closebtn" onclick="closeNav()">&times;</span>
-
+            <a href="ulsc_dashboard.php">Dashboard</a>
             <a href="addparticipants.php">Add Participants</a>
             <a href="viewevents.php">View Events</a>
         </div>
