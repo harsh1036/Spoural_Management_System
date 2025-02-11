@@ -111,6 +111,27 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             padding: 10px;
             text-decoration: none;
         }
+        .search-box {
+            width: 50%;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .search-box input {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+        .search-box i {
+            margin-right: 10px;
+            color: #007BFF;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -148,7 +169,6 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
         <a href="ulsc_dashboard.php">
         <img src="../assets/images/charusat.png" alt="Logo">
         </a>
-
         </div>
         <h1>ULSC - Add Participants</h1>
 
@@ -169,26 +189,16 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
     </header>
 
     <main>
-        <!-- Add Participant Form (As it was) -->
-        <form method="post" action="addparticipants.php">
-            <label>Student ID:</label>
-            <input type="text" name="student_id" required>
+        <!-- Search Box -->
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by Student ID or Event Name">
+        </div>
 
-            <label>Event:</label>
-            <select name="event_id" required>
-                <option value="">Select Event</option>
-                <?php foreach ($events as $event) { ?>
-                    <option value="<?php echo $event['id']; ?>"><?php echo $event['event_name']; ?></option>
-                <?php } ?>
-            </select>
-
-            <button type="submit" name="add_participant">Add Participant</button>
-        </form>
-
-        <!-- View Participants Table -->
+        <!-- Participants Table -->
         <section>
             <h2>Participants List</h2>
-            <table>
+            <table id="participantsTable">
                 <thead>
                     <tr>
                         <th>Sr No.</th>
@@ -203,8 +213,7 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo $sr_no++; ?></td>
                             <td><?php echo $participant['student_id']; ?></td>
                             <td><?php echo $participant['event_name']; ?></td>
-                            <td><a href="addparticipants.php?delete_id=<?php echo $participant['id']; ?>" 
-                                    onclick="return confirm('Are you sure you want to delete this participant?');">Delete</a></td>
+                            <td><a href="addparticipants.php?delete_id=<?php echo $participant['id']; ?>">Delete</a></td>
                         </tr>
                     <?php } ?>
                 </tbody>
@@ -213,13 +222,15 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
     </main>
 
     <script>
-    function openNav() {
-        document.getElementById("mySidenav").style.width = "250px";
-    }
-
-    function closeNav() {
-        document.getElementById("mySidenav").style.width = "0";
-    }
+        document.getElementById("searchInput").addEventListener("keyup", function() {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll("#participantsTable tbody tr");
+            rows.forEach(row => {
+                let studentID = row.cells[1].textContent.toLowerCase();
+                let eventName = row.cells[2].textContent.toLowerCase();
+                row.style.display = studentID.includes(filter) || eventName.includes(filter) ? "" : "none";
+            });
+        });
     </script>
 
     <footer>
