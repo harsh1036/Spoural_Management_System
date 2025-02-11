@@ -169,6 +169,7 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
         <a href="ulsc_dashboard.php">
         <img src="../assets/images/charusat.png" alt="Logo">
         </a>
+
         </div>
         <h1>ULSC - Add Participants</h1>
 
@@ -189,6 +190,24 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
     </header>
 
     <main>
+        <!-- Add Participant Form (As it was) -->
+        <form method="post" action="addparticipants.php">
+            <label>Student ID:</label>
+            <input type="text" name="student_id" required>
+
+            <label>Event:</label>
+            <select name="event_id" required>
+                <option value="">Select Event</option>
+                <?php foreach ($events as $event) { ?>
+                    <option value="<?php echo $event['id']; ?>"><?php echo $event['event_name']; ?></option>
+                <?php } ?>
+            </select>
+
+            <button type="submit" name="add_participant">Add Participant</button>
+        </form>
+
+        <!-- View Participants Table -->
+        <main>
         <!-- Search Box -->
         <div class="search-box">
             <i class="fas fa-search"></i>
@@ -219,7 +238,18 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
                 </tbody>
             </table>
         </section>
+        </main>
     </main>
+
+    <script>
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    }
+    </script>
 
     <script>
         document.getElementById("searchInput").addEventListener("keyup", function() {
