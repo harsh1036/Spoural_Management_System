@@ -35,10 +35,12 @@ if (isset($_POST['add_participant'])) {
     $query->bindParam(':event_id', $event_id, PDO::PARAM_INT);
 
     if ($query->execute()) {
-        echo "<script>alert('Participant Added Successfully'); window.location.href='addparticipants.php';</script>";
+        $_SESSION['success'] = "Participant Added Successfully!";
     } else {
-        echo "<script>alert('Failed to Add Participant');</script>";
+        $_SESSION['error'] = "Failed to Add Participant";
     }
+    header("Location: addparticipants.php");
+    exit;
 }
 
 // **Delete Participant**
@@ -50,10 +52,12 @@ if (isset($_GET['delete_id'])) {
     $query->bindParam(':id', $id, PDO::PARAM_INT);
 
     if ($query->execute()) {
-        echo "<script>alert('Participant Deleted Successfully'); window.location.href='addparticipants.php';</script>";
+        $_SESSION['success'] = "Participant Deleted Successfully!";
     } else {
-        echo "<script>alert('Failed to Delete Participant');</script>";
+        $_SESSION['error'] = "Failed to Delete Participant";
     }
+    header("Location: addparticipants.php");
+    exit;
 }
 
 // **Fetch Events for Dropdown**
@@ -132,6 +136,43 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             margin-right: 10px;
             color: #007BFF;
         }
+        .confirm-overlay, .message-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-box, .message-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .confirm-box button, .message-box button {
+            margin: 10px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .confirm-box button:first-child {
+            background: #d9534f;
+            color: white;
+        }
+
+        .confirm-box button:last-child, .message-box button {
+            background: #5bc0de;
+            color: white;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -207,38 +248,36 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
         </form>
 
         <!-- View Participants Table -->
-        <main>
-        <!-- Search Box -->
-        <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Search by Student ID or Event Name">
-        </div>
-
-        <!-- Participants Table -->
-        <section>
-            <h2>Participants List</h2>
-            <table id="participantsTable">
-                <thead>
-                    <tr>
-                        <th>Sr No.</th>
-                        <th>Student ID</th>
-                        <th>Event</th>
-                        <th>Remove</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php $sr_no = 1; foreach ($participants as $participant) { ?>
+        
+            <!-- Search Box -->
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by Student ID or Event Name">
+            </div>
+            <!-- Participants Table -->
+            <section>
+                <h2>Participants List</h2>
+                <table id="participantsTable">
+                    <thead>
                         <tr>
-                            <td><?php echo $sr_no++; ?></td>
-                            <td><?php echo $participant['student_id']; ?></td>
-                            <td><?php echo $participant['event_name']; ?></td>
-                            <td><a href="addparticipants.php?delete_id=<?php echo $participant['id']; ?>">Delete</a></td>
+                            <th>Sr No.</th>
+                            <th>Student ID</th>
+                            <th>Event</th>
+                            <th>Remove</th>
                         </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
-        </section>
-        </main>
+                    </thead>
+                    <tbody>
+                        <?php $sr_no = 1; foreach ($participants as $participant) { ?>
+                            <tr>
+                                <td><?php echo $sr_no++; ?></td>
+                                <td><?php echo $participant['student_id']; ?></td>
+                                <td><?php echo $participant['event_name']; ?></td>
+                                <td><a href="#" onclick="confirmDelete(<?php echo $participant['id']; ?>)">Delete</a></td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </section>
     </main>
 
     <script>
@@ -262,6 +301,26 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             });
         });
     </script>
+
+    <script>
+        function confirmDelete(id) {
+            let confirmationBox = document.createElement("div");
+            confirmationBox.innerHTML = `
+                <div class="confirm-box">
+                    <p>Are you sure you want to delete this participant?</p>
+                    <button onclick="window.location.href='addparticipants.php?delete_id=${id}'">Yes</button>
+                    <button onclick="closeConfirmBox()">No</button>
+                </div>
+            `;
+            confirmationBox.classList.add("confirm-overlay");
+            document.body.appendChild(confirmationBox);
+        }
+        
+        function closeConfirmBox() {
+            document.querySelector(".confirm-overlay").remove();
+        }
+    </script>
+
 
     <footer>
         <p>&copy; 2025 ULSC Dashboard. All Rights Reserved.</p>
