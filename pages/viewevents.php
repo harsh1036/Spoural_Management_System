@@ -58,23 +58,35 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
     </style>
 </head>
 <body>
-    <header>
+<header>
         <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
         <div id="mySidenav" class="sidenav">
             <span class="closebtn" onclick="closeNav()">&times;</span>
-            <a href="ulsc_dashboard.php">Dashboard</a>
             <a href="addparticipants.php">Add Participants</a>
             <a href="viewevents.php">View Events</a>
         </div>
 
         <div class="logo">
-            <a href="ulsc_dashboard.php">
-                <img src="../assets/images/charusat.png" alt="Logo">
-            </a>
+        <a href="ulsc_dashboard.php">
+        <img src="../assets/images/charusat.png" alt="Logo">
+        </a>
+
         </div>
-        <h1>ULSC - View Events</h1>
+        <h1>ULSC - Add Participants</h1>
+
         <div class="logo">
             <img src="../assets/images/ulsc.png" alt="ULSC Logo">
+        </div>
+
+        <div class="dropdown">
+            <button class="dropdown-trigger">
+                <?php echo htmlspecialchars($_SESSION['ulsc_name']); ?> <i class="fas fa-caret-down"></i>
+            </button>
+            <div class="dropdown-menu">
+                <a href="#" class="dropdown-item"><i class="fas fa-user"></i> My Profile</a>
+                <hr>
+                <a href="ulsc_logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Sign-Out</a>
+            </div>
         </div>
     </header>
 
