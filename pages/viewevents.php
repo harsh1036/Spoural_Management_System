@@ -8,9 +8,13 @@ if (!isset($_SESSION['ulsc_id'])) {
     exit;
 }
 
-// **Fetch ULSC Member's Department ID**
+// **Fetch ULSC Member's Department**
 $ulsc_id = $_SESSION['ulsc_id'];
-$sql = "SELECT dept_id FROM ulsc WHERE ulsc_id = :ulsc_id";
+$sql = "SELECT u.dept_id, d.dept_name, u.ulsc_name 
+        FROM ulsc u 
+        JOIN departments d ON u.dept_id = d.id 
+        WHERE u.ulsc_id = :ulsc_id";
+
 $query = $dbh->prepare($sql);
 $query->bindParam(':ulsc_id', $ulsc_id, PDO::PARAM_STR);
 $query->execute();
@@ -20,6 +24,10 @@ if (!$ulsc) {
     echo "<script>alert('ULSC member not found'); window.location.href='ulsc_dashboard.php';</script>";
     exit;
 }
+
+// Store ULSC name and department name
+$ulsc_name = htmlspecialchars($ulsc['ulsc_name']);
+$dept_name = htmlspecialchars($ulsc['dept_name']);
 
 // **Fetch Events**
 $sql = "SELECT id, event_name, event_type FROM events";
@@ -70,8 +78,8 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
         <a href="ulsc_dashboard.php">
         <img src="../assets/images/charusat.png" alt="Logo">
         </a>
-
         </div>
+        
         <h1>ULSC - Add Participants</h1>
 
         <div class="logo">
@@ -80,7 +88,7 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="dropdown">
             <button class="dropdown-trigger">
-                <?php echo htmlspecialchars($_SESSION['ulsc_name']); ?> <i class="fas fa-caret-down"></i>
+                <?php echo "$ulsc_name - $dept_name"; ?> <i class="fas fa-caret-down"></i>
             </button>
             <div class="dropdown-menu">
                 <a href="#" class="dropdown-item"><i class="fas fa-user"></i> My Profile</a>
