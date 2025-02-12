@@ -4,6 +4,12 @@ include('../includes/config.php'); // Include database connection
 
 $message = "";
 
+// Fetch departments from the database
+$sql = "SELECT * FROM departments";
+$query = $dbh->prepare($sql);
+$query->execute();
+$departments = $query->fetchAll(PDO::FETCH_ASSOC);
+
 // **INSERT ULSC MEMBER**
 if (isset($_POST['add_ulsc'])) {
     $ulsc_name = $_POST['ulsc_name'];
@@ -83,10 +89,8 @@ $ulsc_members = $query->fetchAll(PDO::FETCH_ASSOC);
             <!-- SIDE BAR -->
             <div id="mySidenav" class="sidenav">
                 <span class="closebtn" onclick="closeNav()">&times;</span>
-                <br><Br>
                 <br><br>
-                <a href="admindashboard.php">Dashboard</a>
-                <br>
+                <br><br>
                 <a href="addevent.php">Add Event</a>
                 <br>
                 <a href="addulsc.php">Add ULSC</a>
@@ -121,7 +125,7 @@ $ulsc_members = $query->fetchAll(PDO::FETCH_ASSOC);
 
                     <hr>
                     <a href="#" class="dropdown-item">
-                        <i class="fas fa-sign-out-alt"></i> Sign-Out
+                        <a href="ulsc_logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Sign-Out</a>
                     </a>
                 </div>
             </div>
@@ -135,8 +139,14 @@ $ulsc_members = $query->fetchAll(PDO::FETCH_ASSOC);
                     <input type="text" name="ulsc_name" required>
                     <label>ULSC ID:</label>
                     <input type="text" name="ulsc_id" required>
-                    <label>Department ID:</label>
-                    <input type="text" name="dept_id" required>
+                    <label>Department:</label>
+                    <select name="dept_id" required>
+                        <?php foreach ($departments as $dept) { ?>
+                            <option value="<?php echo $dept['dept_id']; ?>">
+                                <?php echo htmlspecialchars($dept['dept_name']); ?>
+                            </option>
+                        <?php } ?>
+                    </select>
                     <label>Password:</label>
                     <input type="password" name="password" required>
                     <button type="submit" name="add_ulsc">Add ULSC</button>
@@ -151,7 +161,7 @@ $ulsc_members = $query->fetchAll(PDO::FETCH_ASSOC);
                             <th>ID</th>
                             <th>ULSC ID</th>
                             <th>ULSC Name</th>
-                            <th>Department ID</th>
+                            <th>Department</th>
                             <th>Edit</th>
                             <th>Remove</th>
                         </tr>
@@ -167,16 +177,19 @@ $ulsc_members = $query->fetchAll(PDO::FETCH_ASSOC);
                                     <form method="POST" action="addulsc.php">
                                         <input type="hidden" name="ulsc_id" value="<?php echo $ulsc['ulsc_id']; ?>">
                                         <input type="text" name="ulsc_name" value="<?php echo $ulsc['ulsc_name']; ?>" required>
-                                        <input type="text" name="dept_id" value="<?php echo $ulsc['dept_id']; ?>" required>
+                                        <select name="dept_id" required>
+                                            <?php foreach ($departments as $dept) { ?>
+                                                <option value="<?php echo $dept['dept_id']; ?>" <?php echo ($dept['dept_id'] == $ulsc['dept_id']) ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($dept['dept_name']); ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
                                         <input type="password" name="password" placeholder="New Password">
                                         <button type="submit" name="edit_ulsc">Update</button>
                                     </form>
                                 </td>
                                 <td>
-                                    <a href="addulsc.php?delete_id=<?php echo $ulsc['ulsc_id']; ?>" 
-                                       onclick="return confirm('Are you sure you want to delete this ULSC member?');">
-                                        Delete
-                                    </a>
+                                    <a href="addulsc.php?delete_id=<?php echo $ulsc['ulsc_id']; ?>" onclick="return confirm('Are you sure you want to delete this ULSC member?');">Delete</a>
                                 </td>
                             </tr>
                         <?php } ?>

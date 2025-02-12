@@ -16,10 +16,8 @@
             <!-- SIDE BAR -->
             <div id="mySidenav" class="sidenav">
                 <span class="closebtn" onclick="closeNav()">&times;</span>
-                <br><Br>
                 <br><br>
-                <a href="admindashboard.php">Dashboard</a>
-                <br>
+                <br><br>
                 <a href="addevent.php">Add Event</a>
                 <br>
                 <a href="addulsc.php">Add ULSC</a>
@@ -55,7 +53,7 @@
 
                     <hr>
                     <a href="#" class="dropdown-item">
-                        <i class="fas fa-sign-out-alt"></i> Sign-Out
+                        <a href="ulsc_logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Sign-Out</a>
                     </a>
                 </div>
             </div>

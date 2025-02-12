@@ -51,7 +51,7 @@
   
                   <hr>
                   <a href="#" class="dropdown-item">
-                      <i class="fas fa-sign-out-alt"></i> Sign-Out
+                    <a href="ulsc_logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Sign-Out</a>
                   </a>
               </div>
           </div>
