@@ -1,15 +1,14 @@
 <?php
 session_start();
-include('../includes/config.php'); // Include database connection
+include('../includes/config.php');
 
 $error = "";
 
-// **LOGIN ULSC**
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ulsc_id = $_POST['ulsc_id'];
     $password = $_POST['password'];
 
-    $sql = "SELECT * FROM ulsc WHERE ulsc_id = :ulsc_id";
+    $sql = "SELECT ulsc_id, ulsc_name, dept_id, password FROM ulsc WHERE ulsc_id = :ulsc_id";
     $query = $dbh->prepare($sql);
     $query->bindParam(':ulsc_id', $ulsc_id, PDO::PARAM_STR);
     $query->execute();
@@ -18,7 +17,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($user && password_verify($password, $user['password'])) {
         $_SESSION['ulsc_id'] = $user['ulsc_id'];
         $_SESSION['ulsc_name'] = $user['ulsc_name'];
-        header("Location: ulsc_dashboard.php"); // Redirect to ULSC dashboard
+        $_SESSION['dept_id'] = $user['dept_id'];
+        $_SESSION['dept_name'] = $user['dept_name']; // Store department ID
+         // Store department ID
+
+        header("Location: viewevents.php"); 
         exit;
     } else {
         $error = "Invalid ULSC ID or Password!";
