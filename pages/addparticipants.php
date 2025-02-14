@@ -23,42 +23,6 @@ if (!$ulsc) {
 
 $dept_id = $ulsc['dept_id']; // Auto-assign dept_id
 
-// **Insert Participant**
-if (isset($_POST['add_participant'])) {
-    $student_id = $_POST['student_id'];
-    $event_id = $_POST['event_id'];
-
-    $sql = "INSERT INTO participants (student_id, dept_id, event_id) VALUES (:student_id, :dept_id, :event_id)";
-    $query = $dbh->prepare($sql);
-    $query->bindParam(':student_id', $student_id, PDO::PARAM_STR);
-    $query->bindParam(':dept_id', $dept_id, PDO::PARAM_INT);
-    $query->bindParam(':event_id', $event_id, PDO::PARAM_INT);
-
-    if ($query->execute()) {
-        $_SESSION['success'] = "Participant Added Successfully!";
-    } else {
-        $_SESSION['error'] = "Failed to Add Participant";
-    }
-    header("Location: addparticipants.php");
-    exit;
-}
-
-// **Delete Participant**
-if (isset($_GET['delete_id'])) {
-    $id = $_GET['delete_id'];
-
-    $sql = "DELETE FROM participants WHERE id = :id";
-    $query = $dbh->prepare($sql);
-    $query->bindParam(':id', $id, PDO::PARAM_INT);
-
-    if ($query->execute()) {
-        $_SESSION['success'] = "Participant Deleted Successfully!";
-    } else {
-        $_SESSION['error'] = "Failed to Delete Participant";
-    }
-    header("Location: addparticipants.php");
-    exit;
-}
 
 // **Fetch Events for Dropdown**
 $sql = "SELECT id, event_name FROM events";
@@ -66,25 +30,35 @@ $query = $dbh->prepare($sql);
 $query->execute();
 $events = $query->fetchAll(PDO::FETCH_ASSOC);
 
-// **Fetch Participants**
-$sql = "SELECT participants.id, participants.student_id, events.event_name 
-        FROM participants 
-        INNER JOIN events ON participants.event_id = events.id
-        WHERE participants.dept_id = :dept_id";
-$query = $dbh->prepare($sql);
-$query->bindParam(':dept_id', $dept_id, PDO::PARAM_INT);
-$query->execute();
-$participants = $query->fetchAll(PDO::FETCH_ASSOC);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $event_id = $_POST['event']; // Selected Event ID
+    $student_ids = $_POST['student_id']; // Array of Student IDs
+
+    if (!empty($event_id) && !empty($student_ids)) {
+        // Prepare SQL statement for bulk insertion
+        $stmt = $dbh->prepare("INSERT INTO participants (event_id,dept_id, student_id) VALUES (?, ?,?)");
+
+        foreach ($student_ids as $student_id) {
+            if (!empty($student_id)) { // Ensure Student ID is not empty
+                $stmt->execute([$event_id, $dept_id, $student_id,]);
+            }
+        }
+        echo "<script>alert('Participants added successfully!'); window.location.href='addparticipants.php';</script>";
+    } else {
+        echo "<script>alert('Please select an event and enter student IDs.');</script>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ULSC - Add Participants</title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -92,6 +66,7 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             padding: 0;
             background: #f8f9fa;
         }
+
         header {
             background: #007BFF;
             color: white;
@@ -100,6 +75,7 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             justify-content: space-between;
             align-items: center;
         }
+
         .sidenav {
             width: 0;
             position: fixed;
@@ -109,12 +85,14 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             padding-top: 60px;
             transition: 0.5s;
         }
+
         .sidenav a {
             color: white;
             display: block;
             padding: 10px;
             text-decoration: none;
         }
+
         .search-box {
             width: 50%;
             margin: 20px auto;
@@ -125,6 +103,7 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             border-radius: 5px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .search-box input {
             width: 100%;
             padding: 8px;
@@ -132,11 +111,14 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             outline: none;
             font-size: 16px;
         }
+
         .search-box i {
             margin-right: 10px;
             color: #007BFF;
         }
-        .confirm-overlay, .message-overlay {
+
+        .confirm-overlay,
+        .message-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -148,7 +130,8 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             justify-content: center;
         }
 
-        .confirm-box, .message-box {
+        .confirm-box,
+        .message-box {
             background: white;
             padding: 20px;
             border-radius: 8px;
@@ -156,7 +139,8 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .confirm-box button, .message-box button {
+        .confirm-box button,
+        .message-box button {
             margin: 10px;
             padding: 8px 15px;
             border: none;
@@ -169,10 +153,12 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             color: white;
         }
 
-        .confirm-box button:last-child, .message-box button {
+        .confirm-box button:last-child,
+        .message-box button {
             background: #5bc0de;
             color: white;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -180,11 +166,14 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             background: #ffffff;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
-        th, td {
+
+        th,
+        td {
             border: 1px solid black;
             padding: 10px;
             text-align: center;
         }
+
         footer {
             background: #007BFF;
             color: white;
@@ -194,104 +183,212 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             bottom: 0;
             width: 100%;
         }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+        }
+
+        .student-entry {
+            display: flex;
+            gap: 10px;
+        }
+
+        .student-entry input {
+            flex: 1;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .submit{
+            width: 10%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .small-table {
+            max-width: 600px;
+            /* Adjust width */
+            margin: left;
+            /* Center the table */
+            font-size: 20px;
+            /* Smaller text */
+        }
+
+        label {
+            font-size: 20px;
+        }
+
+        input {
+            font-size: 15px;
+        }
+
+        /* Button Styling */
+        .custom-dropdown-toggle {
+            background-color: #ffffff;
+            /* Light gray */
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Ensure hover does not change color */
+        .custom-dropdown-toggle:hover,
+        .custom-dropdown-toggle:focus,
+        .custom-dropdown-toggle:active {
+            background-color: #ddd !important;
+            /* Same as default */
+            color: black !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Align Dropdown */
+        .dropdown-menu {
+            min-width: 150px;
+            right: 0;
+            left: auto;
+        }
+
+        select {
+            width: 10%;
+            padding: 6px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: #007bff;
+        }
+    .sub{
+        width: 10%;
+    }
     </style>
 </head>
 
 <body>
     <header>
-        <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+        <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; </span>
+        <!-- SIDE BAR -->
         <div id="mySidenav" class="sidenav">
             <span class="closebtn" onclick="closeNav()">&times;</span>
-            <a href="addparticipants.php">Add Participants</a>
+            <br><Br>
+            <br><br>
+
+            <a href="addparticipants.php">Add Participants</a><br>
             <a href="viewevents.php">View Events</a>
         </div>
 
         <div class="logo">
-        <a href="ulsc_dashboard.php">
-        <img src="../assets/images/charusat.png" alt="Logo">
-        </a>
+            <br><br>
+            <a href="admindashboard.php">
+                <img src="../assets/images/charusat.png" alt="Logo 1">
+            </a>
 
         </div>
-        <h1>ULSC - Add Participants</h1>
+        <h1>Spoural Event Management System</h1>
 
         <div class="logo">
-            <img src="../assets/images/ulsc.png" alt="ULSC Logo">
+
+            <img src="../assets/images/ulsc.png" alt="Logo 2">
         </div>
 
+
+        <!-- DROPDOWN FOR ADMIN NAME -->
         <div class="dropdown">
-            <button class="dropdown-trigger">
-                <?php echo htmlspecialchars($_SESSION['ulsc_name']); ?> <i class="fas fa-caret-down"></i>
+            <button class="custom-dropdown-toggle" type="button">
+                <?php echo htmlspecialchars($_SESSION['ulsc_name']); ?> <!-- Display admin name -->
             </button>
-            <div class="dropdown-menu">
-                <a href="#" class="dropdown-item"><i class="fas fa-user"></i> My Profile</a>
-                <hr>
-                <a href="ulsc_logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Sign-Out</a>
-            </div>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+            </ul>
         </div>
     </header>
 
     <main>
-        <!-- Add Participant Form (As it was) -->
-        <form method="post" action="addparticipants.php">
-            <label>Student ID:</label>
-            <input type="text" name="student_id" required>
+        <section>
+            <!-- Add Participant Form (As it was) -->
+            <form action="addparticipants.php" method="POST">
+                <label for="eventSelect">Select Event:</label>
+       
+                <select id="eventSelect" name="event" onchange="showParticipantsForm()" required>
+                    <option value="">Select Event</option>
+                    <?php foreach ($events as $event) { ?>
+                        <option value="<?php echo $event['id']; ?>"><?php echo $event['event_name']; ?></option>
+                    <?php } ?>
+                </select>
 
-            <label>Event:</label>
-            <select name="event_id" required>
-                <option value="">Select Event</option>
-                <?php foreach ($events as $event) { ?>
-                    <option value="<?php echo $event['id']; ?>"><?php echo $event['event_name']; ?></option>
-                <?php } ?>
-            </select>
 
-            <button type="submit" name="add_participant">Add Participant</button>
+                <div id="studentsContainer"></div>
+
+                <button  type="submit" class="sub">Submit</button>
+        </section>
         </form>
 
-        <!-- View Participants Table -->
-        
-            <!-- Search Box -->
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search by Student ID or Event Name">
-            </div>
-            <!-- Participants Table -->
-            <section>
-                <h2>Participants List</h2>
-                <table id="participantsTable">
-                    <thead>
-                        <tr>
-                            <th>Sr No.</th>
-                            <th>Student ID</th>
-                            <th>Event</th>
-                            <th>Remove</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php $sr_no = 1; foreach ($participants as $participant) { ?>
-                            <tr>
-                                <td><?php echo $sr_no++; ?></td>
-                                <td><?php echo $participant['student_id']; ?></td>
-                                <td><?php echo $participant['event_name']; ?></td>
-                                <td><a href="#" onclick="confirmDelete(<?php echo $participant['id']; ?>)">Delete</a></td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-            </section>
+
     </main>
 
     <script>
-    function openNav() {
-        document.getElementById("mySidenav").style.width = "250px";
-    }
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
 
-    function closeNav() {
-        document.getElementById("mySidenav").style.width = "0";
-    }
-    </script>
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
 
-    <script>
-        document.getElementById("searchInput").addEventListener("keyup", function() {
+        document.getElementById("searchInput").addEventListener("keyup", function () {
             let filter = this.value.toLowerCase();
             let rows = document.querySelectorAll("#participantsTable tbody tr");
             rows.forEach(row => {
@@ -300,9 +397,7 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
                 row.style.display = studentID.includes(filter) || eventName.includes(filter) ? "" : "none";
             });
         });
-    </script>
 
-    <script>
         function confirmDelete(id) {
             let confirmationBox = document.createElement("div");
             confirmationBox.innerHTML = `
@@ -315,15 +410,41 @@ $participants = $query->fetchAll(PDO::FETCH_ASSOC);
             confirmationBox.classList.add("confirm-overlay");
             document.body.appendChild(confirmationBox);
         }
-        
+
         function closeConfirmBox() {
             document.querySelector(".confirm-overlay").remove();
         }
-    </script>
 
+        function showParticipantsForm() {
+            var event = document.getElementById("eventSelect").value;
+            var container = document.getElementById("studentsContainer");
+
+            // Clear previous inputs
+            container.innerHTML = "";
+
+            // If any event is selected, show 10 Student ID input fields
+            if (event) {
+                let formHTML = `<h3>Enter 10 Student IDs for <strong>${event}</strong></h3>`;
+                formHTML += '<table border="2" style="width:100%; text-align:center;"  class="table table-bordered table-striped small-table">';
+                formHTML += '<tr><th>Student ID</th></tr>';
+
+                for (let i = 1; i <= 2; i++) {
+                    formHTML += `
+                <tr>
+                    <td><input type="text" name="student_id[]" required></td>
+                </tr>
+            `;
+                }
+
+                formHTML += '</table>';
+                container.innerHTML = formHTML;
+            }
+        }
+    </script>
 
     <footer>
         <p>&copy; 2025 ULSC Dashboard. All Rights Reserved.</p>
     </footer>
 </body>
+
 </html>

@@ -2,12 +2,6 @@
 session_start();
 include('../includes/config.php');
 
-// **Ensure ULSC is Logged In**
-if (!isset($_SESSION['ulsc_id'])) {
-    header("Location: ulsc_login.php");
-    exit;
-}
-
 // **Fetch ULSC Member's Department**
 $ulsc_id = $_SESSION['ulsc_id'];
 $sql = "SELECT u.dept_id, d.dept_name, u.ulsc_name 
@@ -34,6 +28,15 @@ $sql = "SELECT id, event_name, event_type FROM events";
 $query = $dbh->prepare($sql);
 $query->execute();
 $events = $query->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+
+
+$query = "SELECT e.id, e.event_name, e.event_type, 
+                 (SELECT COUNT(*) FROM participants p WHERE p.event_id = e.id) AS participant_count
+          FROM events e";
+$result = $conn->query($query);
 ?>
 
 <!DOCTYPE html>
@@ -44,6 +47,7 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
     <title>ULSC - View Events</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .sidenav {
             width: 250px;
@@ -63,6 +67,16 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
         .sidenav.open {
             left: 0;
         }
+        .event-header { 
+            font-size: 20px; 
+            font-weight: bold; 
+            margin-top: 20px; 
+            cursor: pointer; 
+        }
+        .no-participants { background-color: #ffcccc; } /* Highlight events with no participants */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; display: none; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
     </style>
 </head>
 <body>
@@ -98,29 +112,36 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </header>
 
-    <main>
-        <section>
-            <h2>Events List</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Sr No.</th>
-                        <th>Event Name</th>
-                        <th>Event Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php $sr_no = 1; foreach ($events as $event) { ?>
-                        <tr>
-                            <td><?php echo $sr_no++; ?></td>
-                            <td><?php echo $event['event_name']; ?></td>
-                            <td><?php echo $event['event_type']; ?></td>
-                        </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
-        </section>
-    </main>
+    <h2>Event List</h2>
+
+<?php while ($row = $result->fetch_assoc()): ?>
+    <div class="event-header <?= $row['participant_count'] == 0 ? 'no-participants' : '' ?>" onclick="toggleTable(<?= $row['id'] ?>)">
+        <?= htmlspecialchars($row['event_name']) ?> (<?= htmlspecialchars($row['event_type']) ?>) [+]
+    </div>
+    <table id="participants-table-<?= $row['id'] ?>">
+        <thead>
+            <tr>
+                <th>Student ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $event_id = $row['id'];
+            $participantQuery = "SELECT student_id FROM participants WHERE event_id = $event_id";
+            $participantResult = $conn->query($participantQuery);
+
+            if ($participantResult->num_rows > 0) {
+                while ($participant = $participantResult->fetch_assoc()) {
+                    echo "<tr><td>" . htmlspecialchars($participant['student_id']) . "</td></tr>";
+                }
+            } else {
+                echo "<tr><td>No participants yet.</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+<?php endwhile; ?>
+
 
     <script>
     function openNav() {
@@ -129,6 +150,19 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
     function closeNav() {
         document.getElementById("mySidenav").classList.remove("open");
     }
+    function toggleTable(eventId) {
+    let table = $("#participants-table-" + eventId);
+    let header = $(".event-header[onclick='toggleTable(" + eventId + ")']");
+
+    if (table.is(":visible")) {
+        table.slideUp();
+        header.html(header.html().replace("[-]", "[+]"));
+    } else {
+        table.slideDown();
+        header.html(header.html().replace("[+]", "[-]"));
+    }
+}
+
     </script>
 
     <footer>
