@@ -313,6 +313,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .sub{
         width: 10%;
     }
+
+    .participant-entry {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.participant-entry input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.add-btn, .remove-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.remove-btn {
+    background-color: #dc3545;
+}
+
     </style>
 </head>
 
@@ -360,21 +388,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <section>
             <!-- Add Participant Form (As it was) -->
             <form action="addparticipants.php" method="POST">
-                <label for="eventSelect">Select Event:</label>
-       
-                <select id="eventSelect" name="event" onchange="showParticipantsForm()" required>
-                    <option value="">Select Event</option>
-                    <?php foreach ($events as $event) { ?>
-                        <option value="<?php echo $event['id']; ?>"><?php echo $event['event_name']; ?></option>
-                    <?php } ?>
-                </select>
+    <label for="eventSelect">Select Event:</label>
+    <select id="eventSelect" name="event" onchange="showParticipantsForm()" required>
+        <option value="">Select Event...</option>
+        <?php foreach ($events as $event) : ?>
+            <option value="<?= $event['id']; ?>"><?= htmlspecialchars($event['event_name']); ?></option>
+        <?php endforeach; ?>
+    </select>
 
+    <div id="participantsContainer" style="display:none; margin-top: 15px;">
+        <label>Enter Participant IDs:</label>
+        <div id="participantFields">
+            <div class="participant-entry">
+                <input type="text" name="student_id[]" placeholder="Enter Student ID" required>
+                <button type="button" class="add-btn" onclick="addParticipantField()">+</button>
+            </div>
+        </div>
+    </div>
 
-                <div id="studentsContainer"></div>
+    <button type="submit" class="submit">Add Participants</button>
+</form>
 
-                <button  type="submit" class="sub">Submit</button>
-        </section>
-        </form>
 
 
     </main>
@@ -441,6 +475,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
     </script>
+
+<script>
+function showParticipantsForm() {
+    var eventSelect = document.getElementById("eventSelect");
+    var participantsContainer = document.getElementById("participantsContainer");
+
+    if (eventSelect.value !== "") {
+        participantsContainer.style.display = "block";
+    } else {
+        participantsContainer.style.display = "none";
+    }
+}
+
+function addParticipantField() {
+    var container = document.getElementById("participantFields");
+
+    var newDiv = document.createElement("div");
+    newDiv.classList.add("participant-entry");
+
+    var newInput = document.createElement("input");
+    newInput.type = "text";
+    newInput.name = "student_id[]";
+    newInput.placeholder = "Enter Student ID";
+    newInput.required = true;
+
+    var removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.innerHTML = "-";
+    removeBtn.classList.add("remove-btn");
+    removeBtn.onclick = function () {
+        container.removeChild(newDiv);
+    };
+
+    newDiv.appendChild(newInput);
+    newDiv.appendChild(removeBtn);
+    container.appendChild(newDiv);
+}
+</script>
+
 
     <footer>
         <p>&copy; 2025 ULSC Dashboard. All Rights Reserved.</p>
