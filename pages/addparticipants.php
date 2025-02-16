@@ -60,288 +60,109 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="../assets/css/style.css">
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f8f9fa;
-        }
-
-        header {
-            background: #007BFF;
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .sidenav {
-            width: 0;
-            position: fixed;
-            left: 0;
-            background: #111;
-            height: 100%;
-            padding-top: 60px;
-            transition: 0.5s;
-        }
-
-        .sidenav a {
-            color: white;
-            display: block;
-            padding: 10px;
-            text-decoration: none;
-        }
-
-        .search-box {
-            width: 50%;
-            margin: 20px auto;
-            display: flex;
-            align-items: center;
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 8px;
-            border: none;
-            outline: none;
-            font-size: 16px;
-        }
-
-        .search-box i {
-            margin-right: 10px;
-            color: #007BFF;
-        }
-
-        .confirm-overlay,
-        .message-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .confirm-box,
-        .message-box {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .confirm-box button,
-        .message-box button {
-            margin: 10px;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .confirm-box button:first-child {
-            background: #d9534f;
-            color: white;
-        }
-
-        .confirm-box button:last-child,
-        .message-box button {
-            background: #5bc0de;
-            color: white;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: #ffffff;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        th,
-        td {
-            border: 1px solid black;
-            padding: 10px;
-            text-align: center;
-        }
-
-        footer {
-            background: #007BFF;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: relative;
-            bottom: 0;
-            width: 100%;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
-
-        select,
-        input {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-        }
-
-        .student-entry {
-            display: flex;
-            gap: 10px;
-        }
-
-        .student-entry input {
-            flex: 1;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            margin-top: 15px;
-            width: 100%;
-        }
-        .submit{
-            width: 10%;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        table,
-        th,
-        td {
-            border: 1px solid #ddd;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .small-table {
-            max-width: 600px;
-            /* Adjust width */
-            margin: left;
-            /* Center the table */
-            font-size: 20px;
-            /* Smaller text */
-        }
-
-        label {
-            font-size: 20px;
-        }
-
-        input {
-            font-size: 15px;
-        }
-
-        /* Button Styling */
-        .custom-dropdown-toggle {
-            background-color: #ffffff;
-            /* Light gray */
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* Ensure hover does not change color */
-        .custom-dropdown-toggle:hover,
-        .custom-dropdown-toggle:focus,
-        .custom-dropdown-toggle:active {
-            background-color: #ddd !important;
-            /* Same as default */
-            color: black !important;
-            outline: none !important;
-            box-shadow: none !important;
-        }
-
-        /* Align Dropdown */
-        .dropdown-menu {
-            min-width: 150px;
-            right: 0;
-            left: auto;
-        }
-
-        select {
-            width: 10%;
-            padding: 6px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            outline: none;
-        }
-
-        select:focus {
-            border-color: #007bff;
-        }
-    .sub{
-        width: 10%;
+    /* General Styling */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f8f9fa;
+        text-align: center;
     }
 
+    .container {
+        width: 50%;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Label */
+    label {
+        font-weight: bold;
+        display: block;
+        text-align: left;
+        margin-bottom: 5px;
+    }
+
+    /* Dropdown */
+    select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    /* Participant Entry */
     .participant-entry {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
 
-.participant-entry input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
+    .participant-entry input {
+        width: 60%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
 
-.add-btn, .remove-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    padding: 5px 10px;
-    border-radius: 5px;
-}
+    .add-btn {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        padding: 5px 12px;
+        border-radius: 5px;
+    }
 
-.remove-btn {
-    background-color: #dc3545;
-}
+    .add-btn:hover {
+        background-color: #0056b3;
+    }
 
-    </style>
+    /* Add Participants Button */
+    .submit-btn {
+        background-color: #234a9c;
+        color: white;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+        margin-top: 15px;
+        width: 80%;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+
+    .submit-btn:hover {
+        background-color: #1a3573;
+    }
+
+    /* Responsive */
+    @media screen and (max-width: 768px) {
+        .container {
+            width: 90%;
+        }
+
+        .participant-entry {
+            flex-direction: column;
+        }
+
+        .participant-entry input {
+            width: 100%;
+        }
+
+        .submit-btn {
+            width: 100%;
+        }
+    }
+</style>
+
 </head>
 
 <body>
