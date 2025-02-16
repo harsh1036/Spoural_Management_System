@@ -34,8 +34,10 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
 
 
 $query = "SELECT e.id, e.event_name, e.event_type, 
-                 (SELECT COUNT(*) FROM participants p WHERE p.event_id = e.id) AS participant_count
+                 (SELECT COUNT(*) FROM participants p 
+                  WHERE p.event_id = e.id AND p.dept_id = {$ulsc['dept_id']}) AS participant_count
           FROM events e";
+
 $result = $conn->query($query);
 ?>
 
@@ -76,7 +78,7 @@ $result = $conn->query($query);
         .no-participants { background-color: #ffcccc; } /* Highlight events with no participants */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; display: none; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
+        th { background-color:rgb(36, 25, 25); }
     </style>
 </head>
 <body>
@@ -114,10 +116,14 @@ $result = $conn->query($query);
 
     <h2>Event List</h2>
 
-<?php while ($row = $result->fetch_assoc()): ?>
-    <div class="event-header <?= $row['participant_count'] == 0 ? 'no-participants' : '' ?>" onclick="toggleTable(<?= $row['id'] ?>)">
-        <?= htmlspecialchars($row['event_name']) ?> (<?= htmlspecialchars($row['event_type']) ?>) [+]
+    <?php while ($row = $result->fetch_assoc()): ?>
+    <div class="event-header <?= $row['participant_count'] == 0 ? 'no-participants' : '' ?>" 
+         <?= $row['participant_count'] > 0 ? 'onclick="toggleTable(' . $row['id'] . ')"' : '' ?>>
+        <?= htmlspecialchars($row['event_name']) ?> (<?= htmlspecialchars($row['event_type']) ?>) 
+        <?= $row['participant_count'] > 0 ? '[+]' : '' ?>
     </div>
+    
+    <?php if ($row['participant_count'] > 0): ?>
     <table id="participants-table-<?= $row['id'] ?>">
         <thead>
             <tr>
@@ -127,20 +133,20 @@ $result = $conn->query($query);
         <tbody>
             <?php
             $event_id = $row['id'];
-            $participantQuery = "SELECT student_id FROM participants WHERE event_id = $event_id";
+            $participantQuery = "SELECT student_id FROM participants 
+                     WHERE event_id = $event_id AND dept_id = {$ulsc['dept_id']}";
+
             $participantResult = $conn->query($participantQuery);
 
-            if ($participantResult->num_rows > 0) {
-                while ($participant = $participantResult->fetch_assoc()) {
-                    echo "<tr><td>" . htmlspecialchars($participant['student_id']) . "</td></tr>";
-                }
-            } else {
-                echo "<tr><td>No participants yet.</td></tr>";
+            while ($participant = $participantResult->fetch_assoc()) {
+                echo "<tr><td>" . htmlspecialchars($participant['student_id']) . "</td></tr>";
             }
             ?>
         </tbody>
     </table>
+    <?php endif; ?>
 <?php endwhile; ?>
+
 
 
     <script>
