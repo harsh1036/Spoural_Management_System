@@ -164,6 +164,18 @@ $total_admins = $conn->query("SELECT COUNT(*) AS total FROM admins")->fetch_asso
         function closeNav() {
             document.getElementById("mySidenav").style.width = "0";
         }
+<<<<<<< HEAD
+=======
+        document.addEventListener("click", function(event) {
+        var sidebar = document.getElementById("mySidenav");
+        var sidebarButton = document.querySelector("span[onclick='openNav()']");
+
+        // Check if the click is outside the sidebar and not on the open button
+        if (!sidebar.contains(event.target) && !sidebarButton.contains(event.target)) {
+            closeNav();
+        }
+    });
+>>>>>>> 8244d27 (Download PDF)
     </script>
 </body>
 

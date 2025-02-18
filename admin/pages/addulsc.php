@@ -269,6 +269,11 @@ if (isset($_GET['delete_id'])) {
 
                 </table>
             </section>
+<<<<<<< HEAD
+=======
+            <a href="download.php" class="btn btn-primary" style="margin-top: 10px;">Download PDF</a>
+
+>>>>>>> 8244d27 (Download PDF)
         </main>
     </div>
 
@@ -278,7 +283,22 @@ if (isset($_GET['delete_id'])) {
         }
         function closeNav() {
             document.getElementById("mySidenav").style.width = "0";
+<<<<<<< HEAD
         }
+=======
+            document.body.removeEventListener('click', closeNavOnOutsideClick);
+        }
+
+        document.addEventListener("click", function(event) {
+        var sidebar = document.getElementById("mySidenav");
+        var sidebarButton = document.querySelector("span[onclick='openNav()']");
+
+        // Check if the click is outside the sidebar and not on the open button
+        if (!sidebar.contains(event.target) && !sidebarButton.contains(event.target)) {
+            closeNav();
+        }
+    });
+>>>>>>> 8244d27 (Download PDF)
     </script>
 </body>
 
