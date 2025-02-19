@@ -10,14 +10,10 @@ if (!isset($_SESSION['ulsc_id'])) {
 
 // **Fetch ULSC Member's Department ID**
 $ulsc_id = $_SESSION['ulsc_id'];
-<<<<<<< HEAD
-$sql = "SELECT dept_id FROM ulsc WHERE ulsc_id = :ulsc_id";
-=======
 $sql = "SELECT u.dept_id, d.dept_name, u.ulsc_name 
         FROM ulsc u 
         JOIN departments d ON u.dept_id = d.id 
         WHERE u.ulsc_id = :ulsc_id";
->>>>>>> 8244d27 (Download PDF)
 $query = $dbh->prepare($sql);
 $query->bindParam(':ulsc_id', $ulsc_id, PDO::PARAM_STR);
 $query->execute();
@@ -28,13 +24,10 @@ if (!$ulsc) {
     exit;
 }
 
-<<<<<<< HEAD
-=======
 // Store ULSC name and department name
 $ulsc_name = htmlspecialchars($ulsc['ulsc_name']);
 $dept_name = htmlspecialchars($ulsc['dept_name']);
 
->>>>>>> 8244d27 (Download PDF)
 $dept_id = $ulsc['dept_id']; // Auto-assign dept_id
 
 
@@ -157,8 +150,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         background-color: #1a3573;
     }
 
-<<<<<<< HEAD
-=======
     .sidenav {
             width: 250px;
             position: fixed;
@@ -178,7 +169,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             left: 0;
         }
 
->>>>>>> 8244d27 (Download PDF)
     /* Responsive */
     @media screen and (max-width: 768px) {
         .container {
@@ -202,52 +192,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-<<<<<<< HEAD
-    <header>
-        <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; </span>
-        <!-- SIDE BAR -->
-        <div id="mySidenav" class="sidenav">
-            <span class="closebtn" onclick="closeNav()">&times;</span>
-            <br><Br>
-            <br><br>
-
-            <a href="addparticipants.php">Add Participants</a><br>
-=======
 <header>
         <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
         <div id="mySidenav" class="sidenav">
             <span class="closebtn" onclick="closeNav()">&times;</span>
             <a href="addparticipants.php">Add Participants</a>
->>>>>>> 8244d27 (Download PDF)
             <a href="viewevents.php">View Events</a>
         </div>
 
         <div class="logo">
-<<<<<<< HEAD
-            <br><br>
-            <a href="admindashboard.php">
-                <img src="../assets/images/charusat.png" alt="Logo 1">
-            </a>
-
-        </div>
-        <h1>Spoural Event Management System</h1>
-
-        <div class="logo">
-
-            <img src="../assets/images/ulsc.png" alt="Logo 2">
-        </div>
-
-
-        <!-- DROPDOWN FOR ADMIN NAME -->
-        <div class="dropdown">
-            <button class="custom-dropdown-toggle" type="button">
-                <?php echo htmlspecialchars($_SESSION['ulsc_name']); ?> <!-- Display admin name -->
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" href="#">Profile</a></li>
-                <li><a class="dropdown-item" href="logout.php">Logout</a></li>
-            </ul>
-=======
         <a href="ulsc_dashboard.php">
         <img src="../assets/images/charusat.png" alt="Logo">
         </a>
@@ -268,7 +221,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <hr>
                 <a href="ulsc_logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Sign-Out</a>
             </div>
->>>>>>> 8244d27 (Download PDF)
         </div>
     </header>
 
@@ -289,11 +241,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div id="participantFields">
             <div class="participant-entry">
                 <input type="text" name="student_id[]" placeholder="Enter Student ID" required>
-<<<<<<< HEAD
-                <button type="button" class="add-btn" onclick="addParticipantField()">+</button>
-=======
                 <button type="button" class="add-btn" onclick="addParticipantField()">+</button><br>
->>>>>>> 8244d27 (Download PDF)
             </div>
         </div>
     </div>
@@ -307,14 +255,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script>
         function openNav() {
-<<<<<<< HEAD
-            document.getElementById("mySidenav").style.width = "250px";
-        }
-
-        function closeNav() {
-            document.getElementById("mySidenav").style.width = "0";
-        }
-=======
         document.getElementById("mySidenav").classList.add("open");
     }
     function closeNav() {
@@ -329,7 +269,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             closeNav();
         }
     });
->>>>>>> 8244d27 (Download PDF)
 
         document.getElementById("searchInput").addEventListener("keyup", function () {
             let filter = this.value.toLowerCase();
