@@ -32,7 +32,13 @@ $dept_id = $ulsc['dept_id']; // Auto-assign dept_id
 
 
 // **Fetch Events for Dropdown**
-$sql = "SELECT id, event_name, min_participants, max_participants FROM events";
+$sql = "SELECT e.id, e.event_name, e.min_participants, e.max_participants, 
+               COALESCE(COUNT(p.event_id), 0) AS current_participants 
+        FROM events e
+        LEFT JOIN participants p ON e.id = p.event_id
+        GROUP BY e.id
+        HAVING current_participants < e.max_participants";
+
 $query = $dbh->prepare($sql);
 $query->execute();
 $events = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -41,23 +47,27 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $event_id = $_POST['event']; 
     $student_ids = $_POST['student_id'];
-    $min_participants = $_POST['minParticipants'];
-    $max_participants = $_POST['maxParticipants'];
+    $min_participants = (int) $_POST['minParticipants'];
+    $max_participants = (int) $_POST['maxParticipants'];
 
     // Count number of participants being added
     $num_participants = count($student_ids);
 
     // Check current participants count in the database
     $sql = "SELECT COUNT(*) FROM participants WHERE event_id = :event_id";
+
     $query = $dbh->prepare($sql);
     $query->bindParam(':event_id', $event_id, PDO::PARAM_INT);
     $query->execute();
-    $current_count = $query->fetchColumn();
+    $current_count = (int) $query->fetchColumn();
 
     // Calculate total participants after adding new ones
     $total_participants = $current_count + $num_participants;
 
-    // Validate the number of participants
+    // Debugging Output
+    error_log("Min: $min_participants, Max: $max_participants, Total: $total_participants");
+
+    // Validate participants count
     if ($total_participants < $min_participants) {
         echo "<script>alert('Participants must be at least $min_participants.'); window.location.href='addparticipants.php';</script>";
         exit;
@@ -247,14 +257,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <main>
         <section>
-            
+
             <!-- Add Participant Form (As it was) -->
             <form action="addparticipants.php" method="POST">
         <label for="eventSelect">Select Event:</label>
         <select id="eventSelect" name="event" onchange="showParticipantsForm()" required>
         <option value="">Select Event...</option>
         <?php foreach ($events as $event) : ?>
-            <option value="<?= $event['id']; ?>"><?= htmlspecialchars($event['event_name']); ?></option>
+
+            <option value="<?= $event['id']; ?>" data-min="<?= $event['min_participants']; ?>" data-max="<?= $event['max_participants']; ?>">
+                <?= htmlspecialchars($event['event_name']); ?>
+            </option>
+
         <?php endforeach; ?>
         </select>
 
@@ -320,42 +334,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             document.querySelector(".confirm-overlay").remove();
         }
 
+    
+
         function showParticipantsForm() {
-            var event = document.getElementById("eventSelect").value;
-            var container = document.getElementById("studentsContainer");
-
-            // Clear previous inputs
-            container.innerHTML = "";
-
-            // If any event is selected, show 10 Student ID input fields
-            if (event) {
-                let formHTML = `<h3>Enter 10 Student IDs for <strong>${event}</strong></h3>`;
-                formHTML += '<table border="2" style="width:100%; text-align:center;"  class="table table-bordered table-striped small-table">';
-                formHTML += '<tr><th>Student ID</th></tr>';
-
-                for (let i = 1; i <= 2; i++) {
-                    formHTML += `
-                <tr>
-                    <td><input type="text" name="student_id[]" required></td>
-                </tr>
-            `;
-                }
-
-                formHTML += '</table>';
-                container.innerHTML = formHTML;
-            }
-        }
-
-function showParticipantsForm() {
     var eventSelect = document.getElementById("eventSelect");
-    var participantsContainer = document.getElementById("participantsContainer");
+    var selectedOption = eventSelect.options[eventSelect.selectedIndex];
+    var min = selectedOption.getAttribute("data-min");
+    var max = selectedOption.getAttribute("data-max");
 
-    if (eventSelect.value !== "") {
-        participantsContainer.style.display = "block";
-    } else {
-        participantsContainer.style.display = "none";
-    }
+    document.getElementById("minParticipants").value = min;
+    document.getElementById("maxParticipants").value = max;
+    document.getElementById("participantsContainer").style.display = "block";
 }
+
 
 function addParticipantField() {
     var container = document.getElementById("participantFields");
@@ -390,19 +381,22 @@ function addParticipantField() {
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log("Response:", xhr.responseText); // Debugging
                 var response = JSON.parse(xhr.responseText);
                 if (response.success) {
+                    console.log("Min:", response.minParticipants, "Max:", response.maxParticipants);
                     document.getElementById("minParticipants").value = response.minParticipants;
                     document.getElementById("maxParticipants").value = response.maxParticipants;
-                    document.getElementById("participantsContainer").style.display = "block";
+                } else {
+                    console.error("Failed to fetch event limits.");
                 }
             }
         };
         xhr.send("event_id=" + eventId);
-    } else {
-        document.getElementById("participantsContainer").style.display = "none";
     }
 }
+
+
 
 
 

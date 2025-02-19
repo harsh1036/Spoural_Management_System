@@ -10,11 +10,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['event_id'])) {
     $query->execute();
     $event = $query->fetch(PDO::FETCH_ASSOC);
 
+    // Debugging Output
+    error_log("Event ID: $event_id, Min: " . $event['min_participants'] . ", Max: " . $event['max_participants']);
+
     if ($event) {
         echo json_encode([
             "success" => true,
-            "minParticipants" => $event['min_participants'],
-            "maxParticipants" => $event['max_participants']
+            "minParticipants" => (int) $event['min_participants'],
+            "maxParticipants" => (int) $event['max_participants']
         ]);
     } else {
         echo json_encode(["success" => false]);
