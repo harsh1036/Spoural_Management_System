@@ -8,7 +8,7 @@ include('../includes/config.php');
 // Fetch session data
 $admin_username = $_SESSION['alogin'];
 // Initialize variables
-$event_id = $event_name = $event_type = "";
+$event_id = $event_name = $event_type = $min_participants = $max_participants = "";
 
 // **FETCH DATA FOR EDITING**
 if (isset($_GET['edit_id'])) {
@@ -22,6 +22,8 @@ if (isset($_GET['edit_id'])) {
     if ($eventData) {
         $event_name = $eventData['event_name'];
         $event_type = $eventData['event_type'];
+        $min_participants = $eventData['min_participants'];
+        $max_participants = $eventData['max_participants'];
     }
 }
 
@@ -30,20 +32,22 @@ if (isset($_POST['save_event'])) {
     $event_id = $_POST['event_id'];
     $event_name = $_POST['event_name'];
     $event_type = $_POST['event_type'];
+    $min_participants = $_POST['min_participants'];
+    $max_participants = $_POST['max_participants'];
 
     if (!empty($event_id)) {
-        // **UPDATE EVENT**
-        $sql = "UPDATE events SET event_name = :event_name, event_type = :event_type WHERE id = :id";
+        $sql = "UPDATE events SET event_name = :event_name, event_type = :event_type, min_participants = :min_participants, max_participants = :max_participants WHERE id = :id";
         $query = $dbh->prepare($sql);
         $query->bindParam(':id', $event_id, PDO::PARAM_INT);
     } else {
-        // **INSERT EVENT**
-        $sql = "INSERT INTO events (event_name, event_type) VALUES (:event_name, :event_type)";
+        $sql = "INSERT INTO events (event_name, event_type, min_participants, max_participants) VALUES (:event_name, :event_type, :min_participants, :max_participants)";
         $query = $dbh->prepare($sql);
     }
 
     $query->bindParam(':event_name', $event_name, PDO::PARAM_STR);
     $query->bindParam(':event_type', $event_type, PDO::PARAM_STR);
+    $query->bindParam(':min_participants', $min_participants, PDO::PARAM_INT);
+    $query->bindParam(':max_participants', $max_participants, PDO::PARAM_INT);
 
     if ($query->execute()) {
         echo "<script> window.location.href='addevent.php';</script>";
@@ -214,6 +218,12 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
                         required> Sports
                     <input type="radio" name="event_type" value="Cultural" <?= ($event_type == 'Cultural') ? 'checked' : '' ?> required> Cultural
 
+                    <label>Min Participants:</label>
+                    <input type="number" name="min_participants" value="<?= htmlspecialchars($min_participants) ?>" required>
+
+                    <label>Max Participants:</label>
+                    <input type="number" name="max_participants" value="<?= htmlspecialchars($max_participants) ?>" required>
+
                     <button type="submit" name="save_event"><?= !empty($event_id) ? 'Submit' : 'Submit' ?></button>
 
                 </form>
@@ -228,6 +238,8 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
                                 <th>Event ID</th>
                                 <th>Event Name</th>
                                 <th>Event Type</th>
+                                <th>Min Participants</th>
+                                <th>Max Participants</th>
                                 <th>Edit</th>
                                 <th>Remove</th>
                             </tr>
@@ -238,6 +250,8 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?= $event['id'] ?></td>
                                     <td><?= htmlspecialchars($event['event_name']) ?></td>
                                     <td><?= htmlspecialchars($event['event_type']) ?></td>
+                                    <td><?= htmlspecialchars($event['min_participants']) ?></td>
+                                    <td><?= htmlspecialchars($event['max_participants']) ?></td>
                                     <td>
                                         <a href="addevent.php?edit_id=<?= $event['id'] ?>">
                                             <img src="../assets/images/edit.jpg" alt="Edit" width="20" height="20">
