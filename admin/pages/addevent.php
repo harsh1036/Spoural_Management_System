@@ -64,10 +64,11 @@ if (isset($_GET['delete_id'])) {
     $query->bindParam(':id', $id, PDO::PARAM_INT);
 
     if ($query->execute()) {
-        echo "window.location.href='addevent.php';</script>";
+        echo "<script>window.location.href='addevent.php';</script>";
     } else {
         echo "<script>alert('Failed to delete event!');</script>";
     }
+    
 }
 
 $query = $dbh->prepare("SELECT * FROM events ORDER BY id DESC");
@@ -277,9 +278,6 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
         }
         function closeNav() {
             document.getElementById("mySidenav").style.width = "0";
-<<<<<<< HEAD
-        }
-=======
             
         }
         document.addEventListener("click", function(event) {
@@ -291,7 +289,7 @@ $events = $query->fetchAll(PDO::FETCH_ASSOC);
             closeNav();
         }
     });
->>>>>>> 8244d27 (Download PDF)
+
     </script>
 </body>
 
