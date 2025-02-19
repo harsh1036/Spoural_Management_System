@@ -247,6 +247,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <main>
         <section>
+            
             <!-- Add Participant Form (As it was) -->
             <form action="addparticipants.php" method="POST">
         <label for="eventSelect">Select Event:</label>
