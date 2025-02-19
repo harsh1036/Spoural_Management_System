@@ -156,8 +156,6 @@ $result = $conn->query($query);
     function closeNav() {
         document.getElementById("mySidenav").classList.remove("open");
     }
-<<<<<<< HEAD
-=======
     document.addEventListener("click", function(event) {
         var sidebar = document.getElementById("mySidenav");
         var sidebarButton = document.querySelector("span[onclick='openNav()']");
@@ -167,7 +165,6 @@ $result = $conn->query($query);
             closeNav();
         }
     });
->>>>>>> 8244d27 (Download PDF)
     function toggleTable(eventId) {
     let table = $("#participants-table-" + eventId);
     let header = $(".event-header[onclick='toggleTable(" + eventId + ")']");

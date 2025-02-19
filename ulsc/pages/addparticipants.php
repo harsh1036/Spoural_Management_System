@@ -32,28 +32,49 @@ $dept_id = $ulsc['dept_id']; // Auto-assign dept_id
 
 
 // **Fetch Events for Dropdown**
-$sql = "SELECT id, event_name FROM events";
+$sql = "SELECT id, event_name, min_participants, max_participants FROM events";
 $query = $dbh->prepare($sql);
 $query->execute();
 $events = $query->fetchAll(PDO::FETCH_ASSOC);
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $event_id = $_POST['event']; // Selected Event ID
-    $student_ids = $_POST['student_id']; // Array of Student IDs
+    $event_id = $_POST['event']; 
+    $student_ids = $_POST['student_id'];
+    $min_participants = $_POST['minParticipants'];
+    $max_participants = $_POST['maxParticipants'];
 
-    if (!empty($event_id) && !empty($student_ids)) {
-        // Prepare SQL statement for bulk insertion
-        $stmt = $dbh->prepare("INSERT INTO participants (event_id,dept_id, student_id) VALUES (?, ?,?)");
+    // Count number of participants being added
+    $num_participants = count($student_ids);
 
-        foreach ($student_ids as $student_id) {
-            if (!empty($student_id)) { // Ensure Student ID is not empty
-                $stmt->execute([$event_id, $dept_id, $student_id,]);
-            }
-        }
-        echo "<script>alert('Participants added successfully!'); window.location.href='addparticipants.php';</script>";
-    } else {
-        echo "<script>alert('Please select an event and enter student IDs.');</script>";
+    // Check current participants count in the database
+    $sql = "SELECT COUNT(*) FROM participants WHERE event_id = :event_id";
+    $query = $dbh->prepare($sql);
+    $query->bindParam(':event_id', $event_id, PDO::PARAM_INT);
+    $query->execute();
+    $current_count = $query->fetchColumn();
+
+    // Calculate total participants after adding new ones
+    $total_participants = $current_count + $num_participants;
+
+    // Validate the number of participants
+    if ($total_participants < $min_participants) {
+        echo "<script>alert('Participants must be at least $min_participants.'); window.location.href='addparticipants.php';</script>";
+        exit;
+    } 
+    if ($total_participants > $max_participants) {
+        echo "<script>alert('Participants cannot exceed $max_participants.'); window.location.href='addparticipants.php';</script>";
+        exit;
     }
+
+    // Insert participants into the database
+    $stmt = $dbh->prepare("INSERT INTO participants (event_id, dept_id, student_id) VALUES (?, ?, ?)");
+    foreach ($student_ids as $student_id) {
+        if (!empty($student_id)) {
+            $stmt->execute([$event_id, $dept_id, $student_id]);
+        }
+    }
+    echo "<script>alert('Participants added successfully!'); window.location.href='addparticipants.php';</script>";
 }
 ?>
 
@@ -228,28 +249,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <section>
             <!-- Add Participant Form (As it was) -->
             <form action="addparticipants.php" method="POST">
-    <label for="eventSelect">Select Event:</label>
-    <select id="eventSelect" name="event" onchange="showParticipantsForm()" required>
+        <label for="eventSelect">Select Event:</label>
+        <select id="eventSelect" name="event" onchange="showParticipantsForm()" required>
         <option value="">Select Event...</option>
         <?php foreach ($events as $event) : ?>
             <option value="<?= $event['id']; ?>"><?= htmlspecialchars($event['event_name']); ?></option>
         <?php endforeach; ?>
-    </select>
+        </select>
 
-    <div id="participantsContainer" style="display:none; margin-top: 15px;">
-        <label>Enter Participant IDs:</label>
-        <div id="participantFields">
-            <div class="participant-entry">
-                <input type="text" name="student_id[]" placeholder="Enter Student ID" required>
-                <button type="button" class="add-btn" onclick="addParticipantField()">+</button><br>
+        <div id="participantsContainer" style="display:none; margin-top: 15px;">
+
+            <input type="hidden" id="minParticipants" name="minParticipants" value="">
+            <input type="hidden" id="maxParticipants" name="maxParticipants" value="">
+            <label>Enter Participant IDs:</label>
+            <div id="participantFields">
+                <div class="participant-entry">
+                    <input type="text" name="student_id[]" placeholder="Enter Student ID" required>
+                    <button type="button" class="add-btn" onclick="addParticipantField()">+</button><br>
+                </div>
             </div>
         </div>
-    </div>
 
-    <button type="submit" class="submit">Add Participants</button>
-</form>
-
-
+        <button type="submit" class="submit">Add Participants</button>
+    </form>
 
     </main>
 
@@ -269,7 +291,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             closeNav();
         }
     });
-
+    
         document.getElementById("searchInput").addEventListener("keyup", function () {
             let filter = this.value.toLowerCase();
             let rows = document.querySelectorAll("#participantsTable tbody tr");
@@ -322,9 +344,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 container.innerHTML = formHTML;
             }
         }
-    </script>
 
-<script>
 function showParticipantsForm() {
     var eventSelect = document.getElementById("eventSelect");
     var participantsContainer = document.getElementById("participantsContainer");
@@ -359,7 +379,32 @@ function addParticipantField() {
     newDiv.appendChild(newInput);
     newDiv.appendChild(removeBtn);
     container.appendChild(newDiv);
+    }
+
+    function fetchEventLimits() {
+    var eventId = document.getElementById("eventSelect").value;
+    if (eventId !== "") {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "fetch_event_limits.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    document.getElementById("minParticipants").value = response.minParticipants;
+                    document.getElementById("maxParticipants").value = response.maxParticipants;
+                    document.getElementById("participantsContainer").style.display = "block";
+                }
+            }
+        };
+        xhr.send("event_id=" + eventId);
+    } else {
+        document.getElementById("participantsContainer").style.display = "none";
+    }
 }
+
+
+
 </script>
 
 

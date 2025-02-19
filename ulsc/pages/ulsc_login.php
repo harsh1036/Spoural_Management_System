@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['dept_name'] = $user['dept_name']; // Store department ID
          // Store department ID
 
-        header("Location: viewevents.php"); 
+        header("Location: ulsc_dashboard.php"); 
         exit;
     } else {
         $error = "Invalid ULSC ID or Password!";
