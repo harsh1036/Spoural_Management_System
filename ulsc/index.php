@@ -20,7 +20,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['dept_id'] = $user['dept_id'];
         $_SESSION['dept_name'] = $user['dept_name']; // Store department ID
          // Store department ID
-
         header("Location: ulsc_dashboard.php"); 
         exit;
     } else {
