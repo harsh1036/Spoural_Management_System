@@ -1,8 +1,4 @@
 /* For cards*/
-<<<<<<< HEAD
-=======
-
->>>>>>> 8244d27 (Download PDF)
 .card {
     text-align: center;
     padding: 20px;
@@ -13,34 +9,16 @@
     color: white;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 8244d27 (Download PDF)
 .table th,
 .table td {
     text-align: center;
 }
-<<<<<<< HEAD
 /* For Index page*/
-=======
-
-
-/* For Index page*/
-
->>>>>>> 8244d27 (Download PDF)
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     color: #333;
 }
-<<<<<<< HEAD
-#iframeContainer {
-  width: 100%; /* Full width */
-  border: 3px solid black; /* Border for visibility */
-  height: 50%;
-}
-=======
 
 #iframeContainer {
     width: 100%;
@@ -50,7 +28,6 @@ body {
     height: 50%;
 }
 
->>>>>>> 8244d27 (Download PDF)
 .hero {
     background: url('https://via.placeholder.com/1920x500') no-repeat center/cover;
     height: 500px;
@@ -100,23 +77,6 @@ footer {
     text-align: center;
     padding: 10px;
 }
-<<<<<<< HEAD
-  
-  /* Main Content */
-  .main-content {
-    margin-left: 0;
-    transition: margin-left 0.3s;
-    padding: 20px;
-  }
-  
-  /* Responsive Adjustments */
-  @media screen and (max-height: 450px) {
-    .sidenav {padding-top: 15px;}
-    .sidenav a {font-size: 16px;}
-  }
-  /* HEADER*/
-  body {
-=======
 
 
 /* Main Content */
@@ -143,7 +103,6 @@ footer {
 /* HEADER*/
 
 body {
->>>>>>> 8244d27 (Download PDF)
     margin: 0;
     font-family: Arial, sans-serif;
     color: #333;
@@ -174,10 +133,6 @@ header h1 {
     flex: 1;
     text-align: center;
     margin: 0;
-<<<<<<< HEAD
-
-=======
->>>>>>> 8244d27 (Download PDF)
 }
 
 header .logout {
@@ -216,13 +171,9 @@ body {
     overflow-x: hidden;
 }
 
-<<<<<<< HEAD
-/* Sidebar Styling */
-=======
 
 /* Sidebar Styling */
 
->>>>>>> 8244d27 (Download PDF)
 .sidenav {
     height: 80%;
     width: 0;
@@ -260,13 +211,7 @@ body {
     cursor: pointer;
 }
 
-<<<<<<< HEAD
 /* Open Button */
-=======
-
-/* Open Button */
-
->>>>>>> 8244d27 (Download PDF)
 .openbtn {
     font-size: 20px;
     cursor: pointer;
@@ -282,33 +227,17 @@ body {
     background-color: #0056b3;
 }
 
-<<<<<<< HEAD
 /* Responsive Adjustments */
-=======
-
-/* Responsive Adjustments */
-
->>>>>>> 8244d27 (Download PDF)
 @media screen and (max-height: 450px) {
     .sidenav {
         padding-top: 15px;
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> 8244d27 (Download PDF)
     .sidenav a {
         font-size: 16px;
     }
 }
 
-<<<<<<< HEAD
 /* Log out*/
-=======
-
-/* Log out*/
-
->>>>>>> 8244d27 (Download PDF)
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -378,7 +307,6 @@ body {
     display: block;
 }
 
-<<<<<<< HEAD
 /* addevent*/
 section {
   background: white;
@@ -391,22 +319,6 @@ section {
 
 
 /* General Styles */
-=======
-
-/* addevent*/
-
-section {
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
-
-/* General Styles */
-
->>>>>>> 8244d27 (Download PDF)
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -416,32 +328,19 @@ body {
 
 
 /* Main Content */
-<<<<<<< HEAD
-=======
-
->>>>>>> 8244d27 (Download PDF)
 main {
     padding: 20px;
     background: white;
     margin: 20px;
     border-radius: 5px;
-<<<<<<< HEAD
     box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
-=======
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
->>>>>>> 8244d27 (Download PDF)
 }
 
 label {
     font-weight: bold;
 }
 
-<<<<<<< HEAD
 input[type="text"], input[type="radio"] {
-=======
-input[type="text"],
-input[type="radio"] {
->>>>>>> 8244d27 (Download PDF)
     margin-left: 10px;
 }
 
@@ -458,35 +357,18 @@ button:hover {
     background: #218838;
 }
 
-<<<<<<< HEAD
 /* Table */
-=======
-
-/* Table */
-
->>>>>>> 8244d27 (Download PDF)
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
 }
 
-<<<<<<< HEAD
 table, th, td {
     border: 1px solid black;
 }
 
 th, td {
-=======
-table,
-th,
-td {
-    border: 1px solid black;
-}
-
-th,
-td {
->>>>>>> 8244d27 (Download PDF)
     padding: 10px;
     text-align: center;
 }
@@ -494,9 +376,5 @@ td {
 th {
     background: #333;
     color: white;
-<<<<<<< HEAD
 }
 
-=======
-}
->>>>>>> 8244d27 (Download PDF)
